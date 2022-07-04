@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "@divergencetech/ethier": "^0.32.0",
+    "@openzeppelin/contracts": "^4.7.0"
+  }
+}
