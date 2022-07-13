@@ -1,0 +1,54 @@
+{
+  "target": "v1punks",
+  "contractDir": "contracts",
+  "contracts": {
+    "cryp_toadz": {
+      "chain": 1,
+      "address": "0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6"
+    },
+    "generative_masks": {
+      "chain": 1,
+      "address": "0x80416304142fa37929f8a4eee83ee7d2dac12d7c"
+    },
+    "gal_verse": {
+      "chain": 1,
+      "address": "0x582048C4077a34E7c3799962F1F8C5342a3F4b12"
+    },
+    "beefy": {
+      "chain": 1,
+      "address": "0x18a20abeba0086ac0c564B2bA3a7BaF18568667D"
+    },
+    "beefy_strategy": {
+      "chain": 1,
+      "address": "0xBaBaC5560Aa4CA3C5290DfcC5C159EdC0a51c316"
+    },
+    "beefy_chef": {
+      "chain": 1,
+      "address": "0x0769fd68dFb93167989C6f7254cd0D766Fb2841F"
+    },
+    "convex_booster": {
+      "chain": 1,
+      "address": "0xF403C135812408BFbE8713b5A23a04b3D48AAE31"
+    },
+    "pooltogether": {
+      "chain": 1,
+      "address": "0xbc82221e131c082336cf698f0ca3ebd18afd4ce7"
+    },
+    "moonbirds": {
+      "chain": 1,
+      "address": "0x23581767a106ae21c074b2276d25e5c3e136a68b"
+    },
+    "v1punks": {
+      "chain": 1,
+      "address": "0x282bdd42f4eb70e7a9d9f40c8fea0825b7f68c5d"
+    },
+    "space_doodles": {
+      "chain": 1,
+      "address": "0x620b70123fb810f6c653da7644b5dd0b6312e4d8"
+    },
+    "pixel_glyphs": {
+      "chain": 1,
+      "address": "0xF38d6BF300d52bA7880b43cDDB3F94ee3C6C4Ea6"
+    }
+  }
+}

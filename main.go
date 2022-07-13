@@ -10,15 +10,16 @@ import (
 	"path/filepath"
 )
 
-// set here
-const target = "v1punks"
+type Config struct {
+	Target      string                    `json:"target"`
+	ContractDir string                    `json:"contractDir"`
+	Contracts   map[string]ConfigContract `json:"contracts"`
+}
 
-//////////////////////////
-//////////////////////////
-//////////////////////////
-//////////////////////////
-
-const contractDir = "contracts"
+type ConfigContract struct {
+	Chain   chain  `json:"chain"`
+	Address string `json:"address"`
+}
 
 const (
 	ethereum chain = 1
@@ -30,30 +31,11 @@ var blockExploers = map[chain]blockExplorer{
 	polygon:  {endpoint: "https://api.polygonscan.com/", apiKey: os.Getenv("POLYGONSCAN_APIKEY")},
 }
 
-var targetAddresses = map[string]evmAddress{
-	"cryp_toadz":       {Chain: ethereum, Address: "0x1cb1a5e65610aeff2551a50f76a87a7d3fb649c6"},
-	"generative_masks": {Chain: ethereum, Address: "0x80416304142fa37929f8a4eee83ee7d2dac12d7c"},
-	"gal_verse":        {Chain: ethereum, Address: "0x582048C4077a34E7c3799962F1F8C5342a3F4b12"},
-	"beefy":            {Chain: ethereum, Address: "0x18a20abeba0086ac0c564B2bA3a7BaF18568667D"},
-	"beefy_strategy":   {Chain: ethereum, Address: "0xBaBaC5560Aa4CA3C5290DfcC5C159EdC0a51c316"},
-	"beefy_chef":       {Chain: ethereum, Address: "0x0769fd68dFb93167989C6f7254cd0D766Fb2841F"},
-	"convex_booster":   {Chain: ethereum, Address: "0xF403C135812408BFbE8713b5A23a04b3D48AAE31"},
-	"pooltogether":     {Chain: ethereum, Address: "0xbc82221e131c082336cf698f0ca3ebd18afd4ce7"},
-	"moonbirds":        {Chain: ethereum, Address: "0x23581767a106ae21c074b2276d25e5c3e136a68b"},
-	"v1punks":          {Chain: ethereum, Address: "0x282bdd42f4eb70e7a9d9f40c8fea0825b7f68c5d"},
-	"space_doodles":    {Chain: ethereum, Address: "0x620b70123fb810f6c653da7644b5dd0b6312e4d8"},
-}
+type chain uint
 
 type blockExplorer struct {
 	endpoint string
 	apiKey   string
-}
-
-type chain uint
-
-type evmAddress struct {
-	Chain   chain
-	Address string
 }
 
 func main() {
@@ -64,7 +46,12 @@ func main() {
 }
 
 func run() error {
-	targetAddress := targetAddresses[target]
+	c, err := loadConfig()
+	if err != nil {
+		return err
+	}
+
+	targetAddress := c.Contracts[c.Target]
 	explorer := blockExploers[targetAddress.Chain]
 
 	rawCodes, err := getRawContractCode(explorer.endpoint, targetAddress.Address, explorer.apiKey)
@@ -79,11 +66,11 @@ func run() error {
 
 	for _, sourceCode := range sourceCodes {
 		for path, source := range sourceCode.Sources {
-			if err := os.MkdirAll(targetDir(target, path), os.ModePerm); err != nil {
+			if err := os.MkdirAll(targetDir(c.ContractDir, c.Target, path), os.ModePerm); err != nil {
 				return err
 			}
 
-			f, err := os.Create(targetPath(target, path))
+			f, err := os.Create(targetPath(c.ContractDir, c.Target, path))
 			if err != nil {
 				return err
 			}
@@ -96,17 +83,32 @@ func run() error {
 	return nil
 }
 
+func loadConfig() (*Config, error) {
+	bs, err := os.ReadFile("config.json")
+	if err != nil {
+		return nil, err
+	}
+
+	c := &Config{}
+
+	if err := json.NewDecoder(bytes.NewBuffer(bs)).Decode(c); err != nil {
+		return nil, err
+	}
+
+	return c, err
+}
+
 func getContractURL(endpoint string, address string, apikey string) string {
 	const url = "%s/api?module=contract&action=getsourcecode&address=%s&apikey=%s"
 	return fmt.Sprintf(url, endpoint, address, apikey)
 }
 
-func targetDir(dir string, path string) string {
-	return filepath.Dir(targetPath(dir, path))
+func targetDir(rootDir string, dir string, path string) string {
+	return filepath.Dir(targetPath(rootDir, dir, path))
 }
 
-func targetPath(dir string, path string) string {
-	return filepath.Join(contractDir, dir, path)
+func targetPath(rootDir string, dir string, path string) string {
+	return filepath.Join(rootDir, dir, path)
 }
 
 func getRawContractCode(endpoint, address string, apiKey string) ([]*RawCode, error) {

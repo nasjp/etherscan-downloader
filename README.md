@@ -2,7 +2,7 @@
 
 ## run
 
-1. edit variables `target` and `evmAddresses` on top of main.go
+1. edit `config.json`
 
 2. set env
 
